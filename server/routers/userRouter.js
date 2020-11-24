@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const sharp = require("sharp");
-const { sendWelcomeMail, sendNotificationMail } = require("../emails/account");
+// const { sendWelcomeMail, sendNotificationMail } = require("../emails/account");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 
@@ -18,13 +18,13 @@ router.get("", (req, res) => {
 
 // sign-up and create a new user
 router.post("/users/sign-up", async (req, res) => {
-  const newUser = new User(req.body);
-  console.log("got a request");
+  const user = new User(req.body);
   try {
-    const token = await newUser.generateAuthToken();
+    const token = await user.generateAuthToken();
     // sendWelcomeMail(newUser.email, newUser.name);
-    await newUser.save();
-    return res.status(201).send({ newUser, token });
+    await user.save();
+    console.log("user sign up");
+    return res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -66,6 +66,7 @@ router.post(
     res.status(400).send({ error: error.message });
   },
 );
+
 // delete a profile pic
 router.delete(
   "/users/me/avatar",

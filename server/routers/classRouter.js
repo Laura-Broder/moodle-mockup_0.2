@@ -6,21 +6,20 @@ const router = new express.Router();
 
 // create a new classroom
 router.post("/classes", auth, async (req, res) => {
-  const newClass = new Classroom({
+  const classroom = new Classroom({
     ...req.body,
     owner: req.user._id,
   });
 
   try {
-    await newClass.save();
-    return res.status(201).send(newClass);
+    await classroom.save();
+    return res.status(201).send(classroom);
   } catch (e) {
     res.status(400).send(e);
   }
 });
 
 // upload a file
-
 const upload = multer({
   dest: "uploads/classFiles/",
   limits: {

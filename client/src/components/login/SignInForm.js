@@ -1,16 +1,20 @@
 import React, { useState } from "react";
-import { logIn } from "../../apis/api";
+import { logIn } from "../../apis/usersApi";
+import { setLoggedInUser } from "../../apis/auth";
 import { StyledForm } from "./loginStyle";
 import Button from "../utils/Button";
 import Input from "../utils/Input";
+import { useHistory } from "react-router-dom";
 
-const SignInForm = () => {
+const SignInForm = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const history = useHistory();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    logIn({ email, password });
+    setLoggedInUser(await logIn({ email, password }));
+    history.push(`/${props.userType}/dashboard`);
   };
 
   return (
@@ -18,6 +22,7 @@ const SignInForm = () => {
       <h3>Sign In</h3>
       <div>
         <Input
+          required
           label="Email:"
           name="email"
           onChange={(e) => {
@@ -26,6 +31,7 @@ const SignInForm = () => {
           value={email}
         />
         <Input
+          required
           label="Password:"
           name="password"
           onChange={(e) => {

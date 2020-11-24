@@ -2,12 +2,14 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { StyledContainer } from "./landingPageStyle";
 import Button from "../utils/Button";
-import { testConnection } from "../../apis/api";
+import { testConnection } from "../../apis/usersApi";
 
-const LandingPage = () => {
+const LandingPage = (props) => {
   const history = useHistory();
+
   const routeChange = (e) => {
-    history.push(`/login/${e.target.value}`);
+    props.setUserType(e.target.value);
+    history.push("/login");
   };
 
   useEffect(() => {
