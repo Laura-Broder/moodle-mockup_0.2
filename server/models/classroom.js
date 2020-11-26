@@ -22,6 +22,9 @@ const classroomSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    file: {
+      type: Buffer,
+    },
   },
   {
     timestamps: true,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createNewUser } from "../../apis/usersApi";
-import { getLoggedInUser, setLoggedInUser } from "../../apis/auth";
+import { getLoggedInUserToken } from "../../apis/auth";
 import { StyledForm } from "./loginStyle";
 import Button from "../utils/Button";
 import Input from "../utils/Input";
@@ -15,10 +15,7 @@ const SignUp = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const id = await createNewUser({ name, email, userId, password });
-    console.log(id);
-    setLoggedInUser(id);
-    console.log(getLoggedInUser());
+    await createNewUser({ name, email, userId, password });
     history.push(`/${props.userType}/dashboard`);
   };
 
@@ -59,8 +56,8 @@ const SignUp = (props) => {
         onChange={(e) => {
           setPassword(e.target.value);
         }}
-        // value={password.replaceAll(/./g, "*")}
         value={password}
+        // value={password.replaceAll(/./g, "*")}
       />
       {/* <Input label="Confirm Password:" name="confPassword" /> */}
       {/* TODO add picture upload */}

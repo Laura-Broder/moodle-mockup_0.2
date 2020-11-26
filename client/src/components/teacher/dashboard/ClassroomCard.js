@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { StyledContainerColumn } from "./cardStyle";
-import { getLoggedInUser } from "../../../apis/auth";
 import { getClassroom } from "../../../apis/classroomsApi";
+import Button from "../../utils/Button";
 
-const ClassroomCard = ({ classId }) => {
-  const [userId, setUserId] = useState("");
+const ClassroomCard = ({ classId, setClassId }) => {
   const [classroom, setClassroom] = useState({});
-
-  useEffect(() => {
-    setUserId(getLoggedInUser());
-  }, []);
 
   useEffect(() => {
     let didCancel = false;
     const fetchClass = async () => {
-      if (userId) {
-        const res = await getClassroom(userId, classId);
-        if (!didCancel) {
-          setClassroom(res);
-        }
+      const res = await getClassroom(classId);
+      if (!didCancel) {
+        setClassroom(res);
       }
     };
     fetchClass();
     return () => {
       didCancel = true;
     };
-  }, [userId, classId]);
+  }, [classId]);
 
   const renderCard = () => {
     if (Object.keys(classroom).length) {
@@ -33,6 +26,12 @@ const ClassroomCard = ({ classId }) => {
         <StyledContainerColumn>
           <h3>Subject: {classroom.subject}</h3>
           <p>Description: {classroom.description}</p>
+          <Button
+            label="close"
+            onClick={() => {
+              setClassId("");
+            }}
+          />
         </StyledContainerColumn>
       );
     } else return null;

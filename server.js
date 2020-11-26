@@ -6,7 +6,6 @@ const classRouter = require("./server/routers/classRouter");
 
 const app = express();
 const port = process.env.PORT;
-console.log(port);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

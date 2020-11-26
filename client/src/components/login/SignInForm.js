@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { logIn } from "../../apis/usersApi";
-import { setLoggedInUser } from "../../apis/auth";
 import { StyledForm } from "./loginStyle";
 import Button from "../utils/Button";
 import Input from "../utils/Input";
@@ -13,8 +12,8 @@ const SignInForm = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoggedInUser(await logIn({ email, password }));
-    history.push(`/${props.userType}/dashboard`);
+    await logIn({ email, password });
+    history.replace(`/${props.userType}/dashboard`);
   };
 
   return (
@@ -37,8 +36,8 @@ const SignInForm = (props) => {
           onChange={(e) => {
             setPassword(e.target.value);
           }}
-          // value={password.replaceAll(/./g, "*")}
           value={password}
+          // value={password.replaceAll(/./g, "*")}
         />
       </div>
       <Button type="submit" label="Sign In" />

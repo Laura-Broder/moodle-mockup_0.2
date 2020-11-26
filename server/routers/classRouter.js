@@ -1,8 +1,8 @@
 const express = require("express");
 const Classroom = require("../models/classroom");
 const auth = require("../middleware/auth");
-const multer = require("multer");
 const router = new express.Router();
+const { fileUpload } = require("../middleware/upload");
 
 // create a new classroom
 router.post("/classes", auth, async (req, res) => {
@@ -19,28 +19,26 @@ router.post("/classes", auth, async (req, res) => {
   }
 });
 
-// upload a file
-const upload = multer({
-  dest: "uploads/classFiles/",
-  limits: {
-    // limit to 1MB
-    fileSize: 1000000,
-  },
-  fileFilter(req, file, callback) {
-    const fileName = file.originalname.toLowerCase();
-    if (!fileName.endsWith(".pdf" || ".doc" || ".docx")) {
-      return callback(new Error("file must be .doc/.docx/.pdf format"));
-    }
-    return callback(undefined, true);
-
-    // callback(undefined, false);
-  },
-});
+// upload or update a file
 router.post(
   "/classes/me/file/:id",
-  upload.single("file"),
-  (req, res) => {
-    res.send("uploaded!");
+  auth,
+  fileUpload.single("file"),
+  async (req, res) => {
+    const _id = req.params.id;
+    console.log(req.body.selectedFile);
+    const buffer = req.file.buffer;
+    try {
+      const classroom = await Classroom.findOne({ _id, owner: req.user._id });
+      if (!classroom) {
+        return res.status(404).send();
+      }
+      classroom.file = buffer;
+      await classroom.save();
+      res.send(classroom);
+    } catch (e) {
+      res.status(500).send();
+    }
   },
   (error, req, res, next) => {
     res.status(400).send({ error: error.message });
@@ -141,7 +139,6 @@ router.patch("/classes/me/:id", auth, async (req, res) => {
 // delete a classroom by id
 router.delete("/classes/me/:id", auth, async (req, res) => {
   const _id = req.params.id;
-
   try {
     const classroom = await Classroom.findOneAndRemove({
       _id,

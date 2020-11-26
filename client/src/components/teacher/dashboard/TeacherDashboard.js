@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyledContainer } from "./dashboardStyle";
 import ClassroomsList from "./ClassroomsList";
-import { getLoggedInUser } from "../../../apis/auth";
 import {
   createNewClassroom,
   getUsersClassrooms,
@@ -9,45 +8,35 @@ import {
 import ClassroomCard from "./ClassroomCard";
 
 const TeacherDashboard = () => {
-  const [userId, setUserId] = useState("");
   const [classrooms, setClassrooms] = useState([]);
   const [warning, setWarning] = useState("");
   const [classId, setClassId] = useState("");
 
   useEffect(() => {
-    setUserId(getLoggedInUser());
-  }, []);
-
-  useEffect(() => {
     let didCancel = false;
     const fetchClasses = async () => {
-      if (userId) {
-        const res = await getUsersClassrooms(userId);
-        if (!didCancel) {
-          setClassrooms([...res]);
-        }
+      const res = await getUsersClassrooms();
+      if (!didCancel) {
+        setClassrooms(res);
       }
     };
     fetchClasses();
     return () => {
       didCancel = true;
     };
-  }, [userId]);
+  }, []);
 
   const handleSubmit = async (classroom) => {
-    if (userId) {
-      const classRes = await createNewClassroom(userId, classroom);
-      if (classRes) {
-        const res = await getUsersClassrooms(userId);
-        setClassrooms([...res]);
-      } else {
-        setWarning(
-          "This subject is already in the list. Try a different name.",
-        );
-        setTimeout(() => {
-          setWarning("");
-        }, 3000);
-      }
+    const classRes = await createNewClassroom(classroom);
+
+    if (classRes) {
+      const res = await getUsersClassrooms();
+      setClassrooms(res);
+    } else {
+      setWarning("This subject is already in the list. Try a different name.");
+      setTimeout(() => {
+        setWarning("");
+      }, 3000);
     }
   };
 
@@ -64,7 +53,9 @@ const TeacherDashboard = () => {
         warning={warning}
       />
 
-      {classId ? <ClassroomCard classId={classId} /> : null}
+      {classId ? (
+        <ClassroomCard classId={classId} setClassId={setClassId} />
+      ) : null}
     </StyledContainer>
   );
 };

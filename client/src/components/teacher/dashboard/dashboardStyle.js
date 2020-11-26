@@ -17,7 +17,7 @@ export const StyledContainer = styled.div`
 
 export const StyledContainerColumn = styled.div`
   border: 2px solid ${color.darkPurple};
-  width: 220px;
+  width: 400px;
   padding: 10px;
   margin: 20px;
   display: flex;
@@ -40,7 +40,7 @@ export const StyledContainerColumn = styled.div`
 export const StyledHeader = styled.h3``;
 
 export const StyledForm = styled.form`
-  max-width: 500px;
+  ${"" /* max-width: 500px; */}
   margin: 10px;
   padding: 3px 10px;
   border: 2px solid ${color.darkPurple};
@@ -54,5 +54,13 @@ export const StyledLink = styled(Link)`
   color: ${color.darkPurple};
   &:hover {
     color: ${color.lightPurple};
+  }
+`;
+
+export const StyledListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  &:hover {
+    color: ${color.darkPurple};
   }
 `;

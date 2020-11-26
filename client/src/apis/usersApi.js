@@ -1,5 +1,5 @@
 import axios from "axios";
-import { setUserToken, removeUserToken, getUserToken } from "./auth";
+import { setUserToken, getLoggedInUserToken, removeUserToken } from "./auth";
 
 export const testConnection = async () => {
   try {
@@ -13,26 +13,25 @@ export const testConnection = async () => {
 export const createNewUser = async (user) => {
   try {
     const res = await axios.post("/api/users/sign-up", user);
-    setUserToken(res.data.user._id, res.data.token);
-    return res.data.user._id;
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const logIn = async (user) => {
-  try {
-    const res = await axios.post("/api/users/sign-in", user);
-    setUserToken(res.data.user._id, res.data.token);
+    setUserToken(res.data.token);
     return res.data.user._id;
   } catch (e) {
     console.log(e.response);
   }
 };
 
-export const getAllUsers = async (id) => {
+export const logIn = async (user) => {
   try {
-    const token = getUserToken(id);
+    const res = await axios.post("/api/users/sign-in", user);
+    return setUserToken(res.data.token);
+  } catch (e) {
+    console.log(e.response);
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const token = getLoggedInUserToken();
     if (!token) {
       return "please log in";
     }
@@ -47,9 +46,17 @@ export const getAllUsers = async (id) => {
   }
 };
 
-export const getUser = async (id) => {
+export const isUserLoggedIn = () => {
+  const token = getLoggedInUserToken();
+  if (!token) {
+    return false;
+  }
+  return true;
+};
+
+export const getUser = async () => {
   try {
-    const token = getUserToken(id);
+    const token = getLoggedInUserToken();
     if (!token) {
       return "please log in";
     }
@@ -64,21 +71,20 @@ export const getUser = async (id) => {
   }
 };
 
-export const logout = async (id) => {
+export const logout = async () => {
   try {
-    const token = getUserToken(id);
+    const token = getLoggedInUserToken();
 
     if (!token) {
       return "please log in";
     }
+    removeUserToken();
 
     const res = await axios.post("/api/users/logout", {
       headers: {
         Authorization: token,
       },
     });
-
-    removeUserToken(id);
 
     return res.data;
   } catch (e) {
@@ -88,7 +94,7 @@ export const logout = async (id) => {
 
 export const updateUser = async (user) => {
   try {
-    const token = getUserToken(user._id);
+    const token = getLoggedInUserToken();
 
     if (!token) {
       return "please log in";
